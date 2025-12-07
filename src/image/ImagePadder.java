@@ -6,16 +6,16 @@ import java.awt.Color;
  * Pads an image to the nearest power of two dimensions with white pixels.
  * @author Eilam Soroka and Maayan Felig
  */
-class PaddedImage {
+class ImagePadder {
 
     private final Image paddedImage;
 
     /**
-     * Constructs a PaddedImage by padding the original image to the nearest power of two dimensions.
+     * Constructs a ImagePadder by padding the original image to the nearest power of two dimensions.
      *
      * @param original
      */
-    public PaddedImage(Image original) {
+    public ImagePadder(Image original) {
         this.paddedImage = createPaddedImage(original);
     }
     /**
