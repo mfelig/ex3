@@ -11,9 +11,8 @@ class ImagePadder {
     private final Image paddedImage;
 
     /**
-     * Constructs a ImagePadder by padding the original image to the nearest power of two dimensions.
-     *
-     * @param original
+     * Constructs an ImagePadder by padding the original image to the nearest power of two dimensions.
+     * @param original the original Image to be padded
      */
     public ImagePadder(Image original) {
         this.paddedImage = createPaddedImage(original);
@@ -23,13 +22,13 @@ class ImagePadder {
      *
      * @return the padded Image
      */
-    public Image getImage() {
+    public Image getPaddedImage() {
         return paddedImage;
     }
 
     /**
      * Creates a new Image padded to the nearest power of two dimensions with white pixels.
-     * @param original
+     * @param original the original Image to be padded
      * @return the padded Image
      */
     private Image createPaddedImage(Image original) {
@@ -54,9 +53,9 @@ class ImagePadder {
         int offsetY = (newHeight - origHeight) / 2;
 
         // Copy original image pixels into the center of the padded image
-        for (int y = 0; y < origHeight; y++) {
-            for (int x = 0; x < origWidth; x++) {
-                paddedPixels[y + offsetY][x + offsetX] = original.getPixel(x, y);
+        for (int i = 0; i < origHeight; i++) {
+            for (int j = 0; j < origWidth; j++) {
+                paddedPixels[i + offsetY][j + offsetX] = original.getPixel(i, j);
             }
         }
 
@@ -64,7 +63,7 @@ class ImagePadder {
     }
     /**
      * Computes the next power of two greater than or equal to n.
-     * @param n
+     * @param n the original size to be padded
      * @return the next power of two
      */
     private int nextPowerOfTwo(int n) {

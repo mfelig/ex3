@@ -36,12 +36,13 @@ public class ImageDivider {
         ArrayList<SubImage> subImages = new ArrayList<>();
 
         for (int i = 0; i < numBlockRows; i++) {
-            for (int j = 0; j < blockSize; j++) {
+            for (int j = 0; j < resolution; j++) {
                 Color[][] currentBlockPixels = new Color[blockSize][blockSize];
 
                 for(int y = 0; y < blockSize; y++) {
                     for(int x = 0; x < blockSize; x++) {
-                        currentBlockPixels[y][x] = paddedImage.getPixel(x, y);
+                        currentBlockPixels[y][x] = paddedImage.getPixel((j * blockSize) + x,
+                                (i * blockSize) + y);
                     }
                 }
                 subImages.add(new SubImage(currentBlockPixels));
