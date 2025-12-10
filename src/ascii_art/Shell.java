@@ -1,10 +1,13 @@
 package ascii_art;
 
+import image.Image;
 import image_char_matching.SubImgCharMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.TreeSet;
+
+import static java.lang.Math.max;
 
 public class Shell {
     private static final int DEFAULT_RESOLUTION = 2;
@@ -14,23 +17,34 @@ public class Shell {
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
     ));
     private final SubImgCharMatcher matcher;
-    private final int resulutionChosen;
+    private int resolutionChosen;
     private String outputFormat;
+    private Image img;
+    private int imgWidth;
+    private int imgHeight;
 
     public Shell() {
         matcher = new SubImgCharMatcher("0123456789".toCharArray());
         outputFormat = "console";
-        resulutionChosen = DEFAULT_RESOLUTION;
+        resolutionChosen = DEFAULT_RESOLUTION;
     }
     public void run(String imageName){
         String line = "";
-        // demonstration
+
+        try {
+            img = new Image(imageName);
+        } catch (Exception e) { // todo is this the right exception?
+            System.out.println("Error loading image.");
+            return;
+        }
+        imgWidth = img.getWidth();
+        imgHeight = img.getHeight();
 
         while(!line.equals("exit")) {
 
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
-            line = handleCommandExacution(line, imageName);
+            line = handleCommandExecution(line);
 //            System.out.println(line); //todo for debug delete at the end
 //            if (line.equals("exit")) {
 //                System.out.println(line);
@@ -38,7 +52,7 @@ public class Shell {
         }
     }
 
-    private String handleCommandExacution(String line, String imageName) {
+    private String handleCommandExecution(String line) {
         // todo take strings after the command and check if the command is legal
         String[] commandInput = line.split(" ");
 
@@ -56,11 +70,11 @@ public class Shell {
                     handleAddOrRemoveInput(commandInput);
                     return "remove";
                 case "res":
-                    // todo handle res command
-                    break;
+                    handleResInput(commandInput);
+                    return "res";
                 case "output":
                     handleOutputInput(commandInput);
-                    break;
+                    return "output";
                 case "reverse":
                     // todo handle asciiArt command
                     break;
@@ -75,6 +89,32 @@ public class Shell {
             System.out.println("Error: illegal command");
             return ""; // todo exception
         }
+    }
+
+    private void handleResInput(String[] commandInput) {
+        if (commandInput.length < 2) {
+            System.out.println("Resolution set to " + resolutionChosen);
+            return;
+        }
+        String update = commandInput[1];
+        if (update.equals("up")) {
+            if (resolutionChosen * 2 <= imgWidth) {
+                resolutionChosen *= 2;
+            }
+            else{
+                System.out.println("Did not change resolution due to exceeding boundaries.");
+            }
+        }
+        if (update.equals("down")) {
+            int minCharsInRow = max(1, imgWidth/imgHeight);
+            if (resolutionChosen / 2 >= minCharsInRow) {
+                resolutionChosen /= 2;
+            }
+            else {
+                System.out.println("Did not change resolution due to exceeding boundaries.");
+            }
+        }
+        System.out.println("Did not change resolution due to incorrect format.");
     }
 
     private void handleOutputInput(String[] commandInput) {
