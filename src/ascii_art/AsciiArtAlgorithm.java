@@ -6,7 +6,7 @@ import image_char_matching.SubImgCharMatcher;
 import java.util.ArrayList;
 
 /**
- * A public class of the package ascii_art.
+ * A public class of the package ascii_art.n
  * Converts full sub-image lists to ASCII characters based on brightness matching.
  * @author Eilam Soroka and Maayan Felig
  */
