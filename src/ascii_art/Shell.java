@@ -17,23 +17,28 @@ public class Shell {
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
             String[] command = isCommandLegal(line);
-            if (command.equals("exit")) {
+            if (command[0].equals("exit")) {
                 break;
             }
-            handleCommand(command);
         }
     }
 
     private String[] isCommandLegal(String line) {
         // todo take strings after the command and check if the command is legal
         String[] commandInput = line.split(" ");
+
         if (legalCommands.contains(commandInput[0])){
             switch (commandInput[0]) {
+                case "exit":
+                    return new String[]{"exit"};
+                case "chars":
+                    // todo handle chars command
+                    break;
                 case "add":
-                    return handleAddInput(commandInput);
+                    handleAddOrRemoveInput(commandInput);
                     break;
                 case "remove":
-                    // todo handle remove command
+                    handleAddOrRemoveInput(commandInput);
                     break;
                 case "res":
                     // todo handle res command
@@ -41,77 +46,80 @@ public class Shell {
                 case "output":
                     // todo handle output command
                     break;
-                default:
-                    return commandInput;
+                case "reverse":
+                    // todo handle asciiArt command
+                    break;
+                case "asciiArt":
+                    // todo handle asciiArt command
+                    break;
+
             }
         }
         else {
             System.out.println("Error: illegal command");
             return null;
         }
+        return null; //todo change all the return nulls
     }
 
-    private void handleAddInput(String[] cmd) {
-        // cmd[1] should exist unless it's invalid
-        if (cmd.length < 2) {
+    private void handleAddOrRemoveInput(String[] commandsInput) {
+        if (commandsInput.length < 2) {
             System.out.println("Did not add due to incorrect format.");
             return;
         }
 
-        String arg = cmd[1];
+        String arg = commandsInput[1];
 
         if (arg.equals("all")) {
             // add 32..126
+            if (commandsInput[0].equals("add")) {
+                // add all
+            } else {
+                // remove all
+            }
             return;
         }
 
         if (arg.equals("space")) {
             // add ' '
+            if (commandsInput[0].equals("add")) {
+                // add space
+            }
+            else {
+            }
+            // remove space
             return;
         }
 
         if (arg.length() == 1) {
-            // add single char
+            if (commandsInput[0].equals("add")) {
+                // add char
+            }
+            else {
+                // remove char
+            }
             return;
         }
 
         if (arg.matches(".-.") && arg.length() == 3) {
             char start = arg.charAt(0);
             char end   = arg.charAt(2);
-            // add range
+            if (start > end) {
+                char temp = start;
+                start = end;
+                end = temp;
+            }
+            if (commandsInput[0].equals("add")) {
+                // add Range
+            }
+            else {
+                // remove Range
+            }
             return;
         }
 
         System.out.println("Did not add due to incorrect format.");
     }
-
-    private void handleCommand(String[] command) {
-        switch (command[0]) {
-            case "chars":
-                // todo handle chars command
-                break;
-            case "add":
-                // todo handle add command
-                break;
-            case "remove":
-                // todo handle remove command
-                break;
-            case "res":
-                // todo handle res command
-                break;
-            case "output":
-                // todo handle output command
-                break;
-            case "reverse":
-                // todo handle asciiArt command
-                break;
-            case "asciiArt":
-                // todo handle asciiArt command
-                break;
-
-        }
-    }
-
 
     public Shell() {
         // todo understand what is  needed here
