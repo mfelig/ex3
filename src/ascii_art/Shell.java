@@ -7,14 +7,20 @@ import java.util.HashSet;
 import java.util.TreeSet;
 
 public class Shell {
-    private final char FIRST_POSSIBLE_CHAR = 32;
-    private final char LAST_POSSIBLE_CHAR = 126;
+    private static final int DEFAULT_RESOLUTION = 2;
+    private static final char FIRST_POSSIBLE_CHAR = 32;
+    private static final char LAST_POSSIBLE_CHAR = 126;
     private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
     ));
-    private SubImgCharMatcher matcher;
+    private final SubImgCharMatcher matcher;
+    private final int resulutionChosen;
+    private String outputFormat;
+
     public Shell() {
         matcher = new SubImgCharMatcher("0123456789".toCharArray());
+        outputFormat = "console";
+        resulutionChosen = DEFAULT_RESOLUTION;
     }
     public void run(String imageName){
         String line = "";
@@ -53,7 +59,7 @@ public class Shell {
                     // todo handle res command
                     break;
                 case "output":
-                    // todo handle output command
+                    handleOutputInput(commandInput);
                     break;
                 case "reverse":
                     // todo handle asciiArt command
@@ -69,6 +75,18 @@ public class Shell {
             System.out.println("Error: illegal command");
             return ""; // todo exception
         }
+    }
+
+    private void handleOutputInput(String[] commandInput) {
+        if (commandInput.length < 2) {
+            System.out.println("Did not change output due to incorrect format.");
+            return;
+        }
+        String format = commandInput[1];
+        if (format.equals("console") || format.equals("html")) {
+            outputFormat = format;
+        }
+        // todo do i need to print in here to consul or should i just send it to the ascii art generator
     }
 
     private void handleCharsInput() {
@@ -131,7 +149,6 @@ public class Shell {
                     matcher.removeChar(c);
                 }
             }
-            return;
         }
 
     }
