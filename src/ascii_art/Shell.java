@@ -1,29 +1,32 @@
 package ascii_art;
 
-import java.lang.reflect.Array;
+import image_char_matching.SubImgCharMatcher;
+
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.SplittableRandom;
 
 public class Shell {
-        private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
+    private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
-        ));
-
+    ));
+    private SubImgCharMatcher matcher;
+    public Shell() {
+        matcher = new SubImgCharMatcher("0123456789".toCharArray());
+    }
     public void run(String imageName){
         String line = "";
 
         while(true) {
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
-            String[] command = isCommandLegal(line);
+            String[] command = handleCommandExacution(line, imageName);
             if (command[0].equals("exit")) {
                 break;
             }
         }
     }
 
-    private String[] isCommandLegal(String line) {
+    private String[] handleCommandExacution(String line, String imageName) {
         // todo take strings after the command and check if the command is legal
         String[] commandInput = line.split(" ");
 
@@ -57,12 +60,13 @@ public class Shell {
         }
         else {
             System.out.println("Error: illegal command");
-            return null;
+            return null; // todo exception
         }
         return null; //todo change all the return nulls
     }
 
     private void handleAddOrRemoveInput(String[] commandsInput) {
+        boolean isAdd = commandsInput[0].equals("add");
         if (commandsInput.length < 2) {
             System.out.println("Did not add due to incorrect format.");
             return;
@@ -72,57 +76,54 @@ public class Shell {
 
         if (arg.equals("all")) {
             // add 32..126
-            if (commandsInput[0].equals("add")) {
-                // add all
-            } else {
-                // remove all
+            for (char c = 32; c <= 126; c++) {
+                if (isAdd) {
+                    matcher.addChar(c);
+                } else {
+                    matcher.removeChar(c);
+                }
+                return;
             }
-            return;
+
+            if (arg.equals("space")) {
+                // add ' '
+                if (isAdd) {
+                    matcher.addChar(' ');
+                } else {
+                    matcher.removeChar(' ');
+                }
+                return;
+            }
+
+            if (arg.length() == 1) {
+                if (isAdd) {
+                    matcher.addChar(arg.charAt(0));
+                } else {
+                    matcher.removeChar(arg.charAt(0));
+                }
+                return;
+            }
+
+            if (arg.matches(".-.") && arg.length() == 3) {
+                char start = arg.charAt(0);
+                char end = arg.charAt(2);
+                if (start > end) {
+                    char temp = start;
+                    start = end;
+                    end = temp;
+                }
+                for (char c = start; c <= end; c++) {
+                    if (isAdd) {
+                        matcher.addChar(c);
+                    } else {
+                        matcher.removeChar(c);
+                    }
+                }
+                return;
+            }
+
+            System.out.println("Did not add due to incorrect format.");
         }
-
-        if (arg.equals("space")) {
-            // add ' '
-            if (commandsInput[0].equals("add")) {
-                // add space
-            }
-            else {
-            }
-            // remove space
-            return;
-        }
-
-        if (arg.length() == 1) {
-            if (commandsInput[0].equals("add")) {
-                // add char
-            }
-            else {
-                // remove char
-            }
-            return;
-        }
-
-        if (arg.matches(".-.") && arg.length() == 3) {
-            char start = arg.charAt(0);
-            char end   = arg.charAt(2);
-            if (start > end) {
-                char temp = start;
-                start = end;
-                end = temp;
-            }
-            if (commandsInput[0].equals("add")) {
-                // add Range
-            }
-            else {
-                // remove Range
-            }
-            return;
-        }
-
-        System.out.println("Did not add due to incorrect format.");
-    }
-
-    public Shell() {
-        // todo understand what is  needed here
     }
     void main() {
         try {
