@@ -15,6 +15,7 @@ public class Shell {
     }
     public void run(String imageName){
         String line = "";
+        // demonstration
 
         while(true) {
             System.out.print(">>> ");
