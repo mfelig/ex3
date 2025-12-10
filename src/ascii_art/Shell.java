@@ -1,8 +1,15 @@
 package ascii_art;
 
+import ascii_output.AsciiOutput;
+import ascii_output.ConsoleAsciiOutput;
+import ascii_output.HtmlAsciiOutput;
 import image.Image;
+import image.ImageDivider;
+import image.ImagePadder;
+import image.SubImage;
 import image_char_matching.SubImgCharMatcher;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.TreeSet;
@@ -22,6 +29,7 @@ public class Shell {
     private Image img;
     private int imgWidth;
     private int imgHeight;
+    private boolean reverse = false;
 
     public Shell() {
         matcher = new SubImgCharMatcher("0123456789".toCharArray());
@@ -45,7 +53,7 @@ public class Shell {
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
             line = handleCommandExecution(line);
-//            System.out.println(line); //todo for debug delete at the end
+//            System.out.println(line); //todo print if the command is illeagl
 //            if (line.equals("exit")) {
 //                System.out.println(line);
 //            }
@@ -53,7 +61,6 @@ public class Shell {
     }
 
     private String handleCommandExecution(String line) {
-        // todo take strings after the command and check if the command is legal
         String[] commandInput = line.split(" ");
 
         if (legalCommands.contains(commandInput[0])){
@@ -76,11 +83,11 @@ public class Shell {
                     handleOutputInput(commandInput);
                     return "output";
                 case "reverse":
-                    // todo handle asciiArt command
-                    break;
+                    handleReverseInput();
+                    return "reverse";
                 case "asciiArt":
-                    // todo handle asciiArt command
-                    break;
+                    handleAsciiArtInput();
+                    return "asciiArt";
 
             }
             return "next command";
@@ -89,6 +96,40 @@ public class Shell {
             System.out.println("Error: illegal command");
             return ""; // todo exception
         }
+    }
+
+    private void handleReverseInput() {
+        reverse = !reverse; // todo understand if it has to change just for true or back and forth
+//        System.out.println("Reverse set to " + reverse);
+    }
+
+    private void handleAsciiArtInput() {
+        if (matcher.getCharSet().size() < 2) {
+            System.out.println("Did not execute. Charset is too small.");
+            return;
+        }
+
+        ImagePadder padder = new ImagePadder(img);
+        Image padded = padder.getPaddedImage();
+
+        ImageDivider divider = new ImageDivider(padded, resolutionChosen);
+        ArrayList<SubImage> subs = divider.divide();
+
+        AsciiArtAlgorithm algo =
+                new AsciiArtAlgorithm(matcher, subs, resolutionChosen, reverse);
+        char[][] asciiMatrix = algo.run();
+
+        AsciiOutput output;
+        if (outputFormat.equals("console")) {
+            output = new ConsoleAsciiOutput();
+        }
+        else {
+            output = new HtmlAsciiOutput("out.html", "Courier New");
+        }
+
+
+        output.out(asciiMatrix);
+
     }
 
     private void handleResInput(String[] commandInput) {
