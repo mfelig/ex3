@@ -17,6 +17,10 @@ public class SubImgCharMatcher {
     private final HashMap<Character, Double> charNotNormalizedBrightnessMap = new HashMap<>();
     private final HashMap<Character, Double> charNormalizedBrightnessMap = new HashMap<>();
 
+    /**
+     * Constructs a SubImgCharMatcher with the given character set.
+     * @param charset an array of characters to be used for matching
+     */
     public SubImgCharMatcher(char[] charset) {
         for(char c : charset) {
             charSet.add(c);
