@@ -17,7 +17,7 @@ import java.util.TreeSet;
 import static java.lang.Math.max;
 
 public class Shell {
-    private static final int DEFAULT_RESOLUTION = 2;
+    private static final int DEFAULT_RESOLUTION = 128;
     private static final char FIRST_POSSIBLE_CHAR = 32;
     private static final char LAST_POSSIBLE_CHAR = 126;
     private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
@@ -141,21 +141,20 @@ public class Shell {
         if (update.equals("up")) {
             if (resolutionChosen * 2 <= imgWidth) {
                 resolutionChosen *= 2;
-            }
-            else{
+            } else {
                 System.out.println("Did not change resolution due to exceeding boundaries.");
             }
-        }
-        if (update.equals("down")) {
-            int minCharsInRow = max(1, imgWidth/imgHeight);
+        } else if (update.equals("down")) {
+
+            int minCharsInRow = max(1, imgWidth / imgHeight);
             if (resolutionChosen / 2 >= minCharsInRow) {
                 resolutionChosen /= 2;
-            }
-            else {
+            } else {
                 System.out.println("Did not change resolution due to exceeding boundaries.");
             }
+        } else {
+            System.out.println("Did not change resolution due to incorrect format.");
         }
-        System.out.println("Did not change resolution due to incorrect format.");
     }
 
     private void handleOutputInput(String[] commandInput) {
@@ -235,7 +234,7 @@ public class Shell {
     }
     void main() {
         try {
-            run("defaultImage.jpg");
+            run("C:\\Users\\Eilam Soroka\\Desktop\\Hebrew\\year_3\\OOP\\ex3\\src\\examples\\maayan 2.jpeg");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
