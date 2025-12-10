@@ -61,6 +61,11 @@ public class SubImgCharMatcher {
                 charNormalizedBrightnessMap.put(c, normalizeCharBrightness(charBrightness)));
     }
 
+    /**
+     * Returns the character that best matches the given brightness.
+     * @param brightness the brightness value to match
+     * @return the matched character
+     */
     public char getCharByImageBrightness(double brightness) {
         double matchedDiff = Double.MAX_VALUE;
         char matchedChar = ' ';
@@ -74,7 +79,14 @@ public class SubImgCharMatcher {
         return matchedChar;
     }
 
+    /**
+     * Adds a character to the character set and updates brightness mappings if needed.
+     * @param c the character to add
+     */
     public void addChar(char c) {
+        if (charSet.contains(c)) {
+            return;
+        }
         charSet.add(c);
         double brightness = calculateCharBrightness(CharConverter.convertToBoolArray(c));
         charNotNormalizedBrightnessMap.put(c, brightness);
@@ -93,7 +105,14 @@ public class SubImgCharMatcher {
         createNormalizedBrightnessMap();
     }
 
+    /**
+     * Removes a character from the character set and updates brightness mappings if needed.
+     * @param c the character to remove
+     */
     public void removeChar(char c) {
+        if(!charSet.contains(c)) {
+            return;
+        }
         charSet.remove(c);
         double brightness = charNotNormalizedBrightnessMap.get(c);
         charNotNormalizedBrightnessMap.remove(c);

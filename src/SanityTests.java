@@ -14,14 +14,20 @@ public class SanityTests {
 //            };
 
         try{
-            Image img = new Image("src/examples/board.jpeg");
+            Image img = new Image("src/examples/cat.jpeg");
             // --- RUN TESTS ---
-            char[] charSet = {'m', 'o'};
+//            char[] charSet = {'#', 'A', '@', '%', 'S', '+', '<', '*', ':', '-', '.', ' '};
+            char[] charSet = new char[126 - 32 + 1];
+            int index = 0;
+
+            for (int code = 32; code <= 126; code++) {
+                charSet[index++] = (char) code;
+            }
             Image paddedImage = testPadder(img);
 //            testDivider(paddedImage);
             SubImgCharMatcher subImgCharMatcher = new SubImgCharMatcher(charSet);
             AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm(subImgCharMatcher,
-                    new ImageDivider(paddedImage,2).divide(),2);
+                    new ImageDivider(paddedImage,200).divide(),200, true);
             char[][] asciiArt = asciiArtAlgorithm.run();
             for (char[] row : asciiArt) {
                 for (char c : row) {

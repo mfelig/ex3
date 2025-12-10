@@ -1,4 +1,4 @@
-SubImgCharMatcher Implementation:
+SubImgCharMatcher Class Implementation:
 In our implementation of the SubImgCharMatcher class, we used different data structures to optimize the
 performance of character matching in sub-images.
 1. charSet: We used a TreeSet to store the characters given in the constructor. The TreeSet provides O(log n)
@@ -23,3 +23,8 @@ dimensions.
 3. SubImage: This class represents a sub-image that has been created through the ImageDivider. It contains
 information about the sub-image's brightness to facilitate character matching without redundant calculations.
 
+AsciiArtAlgorithm Class Implementation:
+In our implementation of the AsciiArtAlgorithm class, we created a constructor that gets a SunImgCharMatcher,
+an ArrayList of SubImages, the resolution of the output image and a boolean indicating whether to use reverse
+mode or not. Using these parameters continues the approach of using the values we've already calculated for
+previous runs.

@@ -15,6 +15,7 @@ public class AsciiArtAlgorithm {
     private final ArrayList<SubImage> subImages;
     private final int numRows;
     private final int numCols;
+    private final boolean reverse;
 
     /**
      * Constructs an AsciiArtAlgorithm with the given matcher, sub-images, and resolution.
@@ -22,11 +23,13 @@ public class AsciiArtAlgorithm {
      * @param subImages the list of SubImage objects to be converted
      * @param resolution the number of columns in the final ASCII art
      */
-    public AsciiArtAlgorithm(SubImgCharMatcher matcher, ArrayList<SubImage> subImages, int resolution) {
+    public AsciiArtAlgorithm(SubImgCharMatcher matcher, ArrayList<SubImage> subImages, int resolution,
+                             boolean reverse) {
         this.matcher = matcher;
         this.subImages = subImages;
         this.numRows = subImages.size() / resolution;
         this.numCols = resolution;
+        this.reverse = reverse;
     }
 
     /**
@@ -35,12 +38,16 @@ public class AsciiArtAlgorithm {
      */
     public char [][] run(){
         char[][] result = new char[numRows][numCols];
-        int i = 0;
         for(int row = 0; row < numRows; row++){
             for(int col = 0; col < numCols; col++){
+                int i = row * numCols + col;
                 SubImage cur = subImages.get(i);
-                result[row][col] = matcher.getCharByImageBrightness(cur.getBrightness());
-                i++;
+                if(!reverse){
+                    result[row][col] = matcher.getCharByImageBrightness(cur.getBrightness());
+                }
+                else{
+                    result[row][col] = matcher.getCharByImageBrightness(1.0 - cur.getBrightness());
+                }
             }
         }
         return result;
