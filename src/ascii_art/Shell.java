@@ -4,8 +4,11 @@ import image_char_matching.SubImgCharMatcher;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.TreeSet;
 
 public class Shell {
+    private final char FIRST_POSSIBLE_CHAR = 32;
+    private final char LAST_POSSIBLE_CHAR = 126;
     private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
     ));
@@ -17,33 +20,35 @@ public class Shell {
         String line = "";
         // demonstration
 
-        while(true) {
+        while(!line.equals("exit")) {
+
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
-            String[] command = handleCommandExacution(line, imageName);
-            if (command[0].equals("exit")) {
-                break;
-            }
+            line = handleCommandExacution(line, imageName);
+//            System.out.println(line); //todo for debug delete at the end
+//            if (line.equals("exit")) {
+//                System.out.println(line);
+//            }
         }
     }
 
-    private String[] handleCommandExacution(String line, String imageName) {
+    private String handleCommandExacution(String line, String imageName) {
         // todo take strings after the command and check if the command is legal
         String[] commandInput = line.split(" ");
 
         if (legalCommands.contains(commandInput[0])){
             switch (commandInput[0]) {
                 case "exit":
-                    return new String[]{"exit"};
+                    return "exit";
                 case "chars":
-                    // todo handle chars command
-                    break;
+                    handleCharsInput();
+                    return "chars";
                 case "add":
                     handleAddOrRemoveInput(commandInput);
-                    break;
+                    return "add";
                 case "remove":
                     handleAddOrRemoveInput(commandInput);
-                    break;
+                    return "remove";
                 case "res":
                     // todo handle res command
                     break;
@@ -58,12 +63,20 @@ public class Shell {
                     break;
 
             }
+            return "next command";
         }
         else {
             System.out.println("Error: illegal command");
-            return null; // todo exception
+            return ""; // todo exception
         }
-        return null; //todo change all the return nulls
+    }
+
+    private void handleCharsInput() {
+        TreeSet<Character> chars = matcher.getCharSet();
+        for (char c : chars) {
+            System.out.print(c + " ");
+        }
+        System.out.println();
     }
 
     private void handleAddOrRemoveInput(String[] commandsInput) {
@@ -76,55 +89,51 @@ public class Shell {
         String arg = commandsInput[1];
 
         if (arg.equals("all")) {
-            // add 32..126
-            for (char c = 32; c <= 126; c++) {
+            for (char c = FIRST_POSSIBLE_CHAR; c <= LAST_POSSIBLE_CHAR; c++) {
                 if (isAdd) {
                     matcher.addChar(c);
                 } else {
                     matcher.removeChar(c);
                 }
-                return;
             }
-
-            if (arg.equals("space")) {
-                // add ' '
-                if (isAdd) {
-                    matcher.addChar(' ');
-                } else {
-                    matcher.removeChar(' ');
-                }
-                return;
-            }
-
-            if (arg.length() == 1) {
-                if (isAdd) {
-                    matcher.addChar(arg.charAt(0));
-                } else {
-                    matcher.removeChar(arg.charAt(0));
-                }
-                return;
-            }
-
-            if (arg.matches(".-.") && arg.length() == 3) {
-                char start = arg.charAt(0);
-                char end = arg.charAt(2);
-                if (start > end) {
-                    char temp = start;
-                    start = end;
-                    end = temp;
-                }
-                for (char c = start; c <= end; c++) {
-                    if (isAdd) {
-                        matcher.addChar(c);
-                    } else {
-                        matcher.removeChar(c);
-                    }
-                }
-                return;
-            }
-
-            System.out.println("Did not add due to incorrect format.");
         }
+
+        if (arg.equals("space")) {
+            if (isAdd) {
+                matcher.addChar(' ');
+            } else {
+                matcher.removeChar(' ');
+            }
+            return;
+        }
+
+        if (arg.length() == 1) {
+            if (isAdd) {
+                matcher.addChar(arg.charAt(0));
+            } else {
+                matcher.removeChar(arg.charAt(0));
+            }
+            return;
+        }
+
+        if (arg.matches(".-.") && arg.length() == 3) {
+            char start = arg.charAt(0);
+            char end = arg.charAt(2);
+            if (start > end) {
+                char temp = start;
+                start = end;
+                end = temp;
+            }
+            for (char c = start; c <= end; c++) {
+                if (isAdd) {
+                    matcher.addChar(c);
+                } else {
+                    matcher.removeChar(c);
+                }
+            }
+            return;
+        }
+
     }
     void main() {
         try {
@@ -132,6 +141,5 @@ public class Shell {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-        run("");
     }
 }
