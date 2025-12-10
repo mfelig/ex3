@@ -1,6 +1,9 @@
-package image;
+import ascii_art.AsciiArtAlgorithm;
+import image.Image;
+import image.ImagePadder;
+import image.ImageDivider;
+import image_char_matching.SubImgCharMatcher;
 
-import java.awt.Color;
 import java.io.IOException;
 
 public class SanityTests {
@@ -11,11 +14,21 @@ public class SanityTests {
 //            };
 
         try{
-            Image img = new Image("src/examples/cat.jpeg");
+            Image img = new Image("src/examples/board.jpeg");
             // --- RUN TESTS ---
+            char[] charSet = {'m', 'o'};
             Image paddedImage = testPadder(img);
-              testDivider(paddedImage);
-//              testSubImageBrightness();
+//            testDivider(paddedImage);
+            SubImgCharMatcher subImgCharMatcher = new SubImgCharMatcher(charSet);
+            AsciiArtAlgorithm asciiArtAlgorithm = new AsciiArtAlgorithm(subImgCharMatcher,
+                    new ImageDivider(paddedImage,2).divide(),2);
+            char[][] asciiArt = asciiArtAlgorithm.run();
+            for (char[] row : asciiArt) {
+                for (char c : row) {
+                    System.out.print(c + " ");
+                }
+                System.out.println();
+            }
         } catch (IOException e){
             System.out.println("File not found");
         }

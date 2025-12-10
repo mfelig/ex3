@@ -6,7 +6,7 @@ import java.awt.Color;
  * Pads an image to the nearest power of two dimensions with white pixels.
  * @author Eilam Soroka and Maayan Felig
  */
-class ImagePadder {
+public class ImagePadder {
 
     private final Image paddedImage;
 
