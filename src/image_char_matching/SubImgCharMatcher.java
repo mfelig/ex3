@@ -140,4 +140,8 @@ public class SubImgCharMatcher {
         }
         createNormalizedBrightnessMap();
     }
+
+    public TreeSet<Character> getCharSet() {
+        return charSet;
+    }
 }
