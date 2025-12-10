@@ -9,8 +9,8 @@ import java.awt.*;
  */
 public class SubImage {
 
-    private double brightness;
-    private Color[][] pixels;
+    private final double brightness;
+    private final Color[][] pixels;
     private static final int MAX_BRIGHTNESS = 255;
 
     /**

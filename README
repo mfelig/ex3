@@ -1,1 +1,25 @@
 SubImgCharMatcher Implementation:
+In our implementation of the SubImgCharMatcher class, we used different data structures to optimize the
+performance of character matching in sub-images.
+1. charSet: We used a TreeSet to store the characters given in the constructor. The TreeSet provides O(log n)
+time complexity for insertion and lookup operations, which is efficient for our needs. It also maintains the
+characters in sorted order, which is helpful when looking for the smallest character with brightness closest
+to a given subImage brightness.
+2. charNotNormalizedBrightnessMap: We used a HashMap to map each character to its corresponding raw brightness
+value. The HashMap provides O(1) average time complexity for lookups, which is crucial for quickly retrieving
+the brightness of a character during the matching process. The not normalized brightness values are calculated
+once and stored in this map so that if the minimum or maximum brightness values change, we can easily
+recompute the normalized values without recalculating the raw brightness for each character.
+3. charNormalizedBrightnessMap: Similar to the previous map, we used another HashMap to store the normalized
+brightness values for each character. This allows for quick access to the already calculated normalized
+brightness values when the char set isn't changed between different runs of the matcher.
+
+image Package Implementation:
+In our implementation of the image package, we added the several classes in order to handle image processing
+while keeping the code modular and implementing the single responsibility principle.:
+1. ImagePadder: This class handles padding images to ensure their dimensions are a power of two.
+2. ImageDivider: This class is responsible for dividing an image into smaller sub-images based on specified
+dimensions.
+3. SubImage: This class represents a sub-image that has been created through the ImageDivider. It contains
+information about the sub-image's brightness to facilitate character matching without redundant calculations.
+
