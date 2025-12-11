@@ -6,6 +6,7 @@ import ascii_output.HtmlAsciiOutput;
 import exceptions.IncorrectFormatException;
 import exceptions.BoundariesException;
 import exceptions.InputException;
+import exceptions.IncorrectCharSetException;
 import image.Image;
 import image.ImageDivider;
 import image.ImagePadder;
@@ -21,6 +22,7 @@ import java.util.TreeSet;
 import static java.lang.Math.max;
 
 public class Shell {
+    //todo add all strings to constants
     private static final int DEFAULT_RESOLUTION = 128;
     private static final char FIRST_POSSIBLE_CHAR = 32;
     private static final char LAST_POSSIBLE_CHAR = 126;
@@ -29,6 +31,7 @@ public class Shell {
     private static final String PLACEHOLDER = "<placeHolder>";
     private static final String OUT_OF_BOUNDS_RES_MESSAGE =
             "Did not change resolution due to exceeding boundaries.";
+    private static final String INSUFFICIENT_CHARS_MESSAGE = "Did not execute. Charset is too small.";
     private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
     ));
@@ -61,7 +64,12 @@ public class Shell {
 
             System.out.print(">>> ");
             line = KeyboardInput.readLine();
-            line = handleCommandExecution(line);
+            try{
+                line = handleCommandExecution(line);
+                }
+            catch (IncorrectFormatException e){ //todo check if this error should be caught
+                System.out.println(e.getMessage());
+            }
 //            System.out.println(line); //
 //            if (line.equals("exit")) {
 //                System.out.println(line);
@@ -69,7 +77,7 @@ public class Shell {
         }
     }
 
-    private String handleCommandExecution(String line) {
+    private String handleCommandExecution(String line) throws IncorrectFormatException {
         String[] commandInput = line.split(" ");
 
         if (legalCommands.contains(commandInput[0])){
@@ -98,29 +106,25 @@ public class Shell {
                     case "asciiArt":
                         handleAsciiArtInput();
                         return "asciiArt";
+                    default:
+                        throw new IncorrectFormatException(INCORRECT_COMMAND_MESSAGE);
                 }
             }
             catch (InputException e) {
                 System.out.println(e.getMessage());
                 return "";
             }
-            return "next command";
         }
-        else {
-            System.out.println(INCORRECT_COMMAND_MESSAGE);
-            return ""; // todo exception
-        }
+        return "next command"; //todo check why method needs return value
     }
 
     private void handleReverseInput() {
         reverse = !reverse; // todo understand if it has to change just for true or back and forth
-//        System.out.println("Reverse set to " + reverse);
     }
 
-    private void handleAsciiArtInput() {
+    private void handleAsciiArtInput() throws IncorrectCharSetException{
         if (matcher.getCharSet().size() < 2) {
-            System.out.println("Did not execute. Charset is too small.");
-            return;
+            throw new IncorrectCharSetException(INSUFFICIENT_CHARS_MESSAGE);
         }
 
         ImagePadder padder = new ImagePadder(img);
