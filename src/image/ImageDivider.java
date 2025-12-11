@@ -41,8 +41,8 @@ public class ImageDivider {
 
                 for(int y = 0; y < blockSize; y++) {
                     for(int x = 0; x < blockSize; x++) {
-                        currentBlockPixels[y][x] = paddedImage.getPixel((j * blockSize) + x,
-                                (i * blockSize) + y);
+                        currentBlockPixels[y][x] = paddedImage.getPixel((i * blockSize) + y,
+                                (j * blockSize) + x);
                     }
                 }
                 subImages.add(new SubImage(currentBlockPixels));

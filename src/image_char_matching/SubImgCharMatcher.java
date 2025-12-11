@@ -141,6 +141,10 @@ public class SubImgCharMatcher {
         createNormalizedBrightnessMap();
     }
 
+    /**
+     * Returns the current character set.
+     * @return a TreeSet of characters in the character set
+     */
     public TreeSet<Character> getCharSet() {
         return charSet;
     }

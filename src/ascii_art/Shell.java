@@ -15,12 +15,17 @@ import image_char_matching.SubImgCharMatcher;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+
 import java.util.TreeSet;
 
 import static java.lang.Math.max;
-
+/**
+ * A public class of the package ascii_art.
+ * Handles user input and executes commands for ASCII art generation.
+ * The Cli like shell allows users to modify character sets, resolution,
+ * output format, and generate ASCII art from images.
+ * @author Eilam Soroka and Maayan Felig
+ */
 public class Shell {
     //todo add all strings to constants
     private static final int DEFAULT_RESOLUTION = 128;
@@ -32,9 +37,28 @@ public class Shell {
     private static final String OUT_OF_BOUNDS_RES_MESSAGE =
             "Did not change resolution due to exceeding boundaries.";
     private static final String INSUFFICIENT_CHARS_MESSAGE = "Did not execute. Charset is too small.";
-    private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
-            "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
-    ));
+    private static final String PRINTING_FORMAT = ">>> ";
+    private static final String SPACE = " ";
+    private static final String CONSOLE_OUTPUT_FORMAT = "console";
+    private static final String HTML_OUTPUT_FORMAT = "html";
+    private static final String EXIT_COMMAND = "exit";
+    private static final String CHARS_COMMAND = "chars";
+    private static final String ADD_COMMAND = "add";
+    private static final String REMOVE_COMMAND = "remove";
+    private static final String RESOLUTION_COMMAND = "res";
+    private static final String OUTPUT_COMMAND = "output";
+    private static final String REVERSE_COMMAND = "reverse";
+    private static final String ASCII_ART_COMMAND = "asciiArt";
+    private static final String OUTPUT_FILE_NAME = "out.html";
+    private static final String FONT_NAME = "Courier New";
+    private static final String RESOLUTION_CHOSEN_MESSAGE = "Resolution set to ";
+    private static final String RESOLUTION_UP_COMMAND = "up";
+    private static final String RESOLUTION_DOWN_COMMAND = "down";
+    private static final String CHANGE_RESOLUTION = "change resolution";
+    private static final String CHANGE_OUTPUT = "change output method";
+    private static final String ENTIRE_PRINTABLE_CHAR_SET = "all";
+    private static final String REGEX = ".-.";
+    private static final char SPACE_CHAR = ' ';
     private final SubImgCharMatcher matcher;
     private int resolutionChosen;
     private String outputFormat;
@@ -43,11 +67,20 @@ public class Shell {
     private int imgHeight;
     private boolean reverse = false;
 
+    /**
+     * Constructs a Shell with default settings.
+     * @return none
+     */
     public Shell() {
         matcher = new SubImgCharMatcher("0123456789".toCharArray());
         outputFormat = "console";
         resolutionChosen = DEFAULT_RESOLUTION;
     }
+    /**
+     * Runs the shell, processing user commands for ASCII art generation.
+     * @param filePath the path to the image file to be processed
+     *                @return none
+     */
     public void run(String filePath){
         String line = "";
 
@@ -70,52 +103,45 @@ public class Shell {
             catch (IncorrectFormatException e){ //todo check if this error should be caught
                 System.out.println(e.getMessage());
             }
-//            System.out.println(line); //
-//            if (line.equals("exit")) {
-//                System.out.println(line);
-//            }
         }
     }
 
     private String handleCommandExecution(String line) throws IncorrectFormatException {
         String[] commandInput = line.split(" ");
 
-        if (legalCommands.contains(commandInput[0])){
-            try {
-                switch (commandInput[0]) {
-                    case "exit":
-                        return "exit";
-                    case "chars":
-                        handleCharsInput();
-                        return "chars";
-                    case "add":
-                        handleAddOrRemoveInput(commandInput);
-                        return "add";
-                    case "remove":
-                        handleAddOrRemoveInput(commandInput);
-                        return "remove";
-                    case "res":
-                        handleResInput(commandInput);
-                        return "res";
-                    case "output":
-                        handleOutputInput(commandInput);
-                        return "output";
-                    case "reverse":
-                        handleReverseInput();
-                        return "reverse";
-                    case "asciiArt":
-                        handleAsciiArtInput();
-                        return "asciiArt";
-                    default:
-                        throw new IncorrectFormatException(INCORRECT_COMMAND_MESSAGE);
-                }
-            }
-            catch (InputException e) {
-                System.out.println(e.getMessage());
-                return "";
+        try {
+            switch (commandInput[0]) {
+                case EXIT_COMMAND:
+                    return EXIT_COMMAND;
+                case CHARS_COMMAND:
+                    handleCharsInput();
+                    return CHARS_COMMAND;
+                case ADD_COMMAND:
+                    handleAddOrRemoveInput(commandInput);
+                    return ADD_COMMAND;
+                case REMOVE_COMMAND:
+                    handleAddOrRemoveInput(commandInput);
+                    return REMOVE_COMMAND;
+                case RESOLUTION_COMMAND:
+                    handleResInput(commandInput);
+                    return RESOLUTION_COMMAND;
+                case OUTPUT_COMMAND:
+                    handleOutputInput(commandInput);
+                    return OUTPUT_COMMAND;
+                case REVERSE_COMMAND:
+                    handleReverseInput();
+                    return REVERSE_COMMAND;
+                case ASCII_ART_COMMAND:
+                    handleAsciiArtInput();
+                    return ASCII_ART_COMMAND;
+                default:
+                    throw new IncorrectFormatException(INCORRECT_COMMAND_MESSAGE);
             }
         }
-        return "next command"; //todo check why method needs return value
+        catch (InputException e) {
+            System.out.println(e.getMessage());
+            return SPACE;
+        }
     }
 
     private void handleReverseInput() {
@@ -184,7 +210,6 @@ public class Shell {
         }
         outputFormat = commandInput[1];
         }
-        // todo do i need to print in here to consul or should i just send it to the ascii art generator
 
     private void handleCharsInput() {
         TreeSet<Character> chars = matcher.getCharSet();
@@ -254,12 +279,18 @@ public class Shell {
             throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.replace(PLACEHOLDER, "remove"));
         }
     }
-
-    void main() {
+    /**
+     * The main method to run the Shell for ASCII art generation.
+     * @param args command-line arguments (not used)
+     *
+     */
+    void main(String[] args) {
         try {
-            run("C:\\Users\\Eilam Soroka\\Desktop\\Hebrew\\year_3\\OOP\\ex3\\src\\examples\\maayan 2.jpeg");
+            Shell shell = new Shell();
+            shell.run(args[0]);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 }
+
