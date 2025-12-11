@@ -4,12 +4,13 @@ import ascii_output.AsciiOutput;
 import ascii_output.ConsoleAsciiOutput;
 import ascii_output.HtmlAsciiOutput;
 import exceptions.IncorrectFormatException;
+import exceptions.BoundariesException;
+import exceptions.InputException;
 import image.Image;
 import image.ImageDivider;
 import image.ImagePadder;
 import image.SubImage;
 import image_char_matching.SubImgCharMatcher;
-import exceptions.IncorrectCommandException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class Shell {
     private static final String INCORRECT_COMMAND_MESSAGE = "Did not execute due to incorrect command.";
     private static final String INCORRECT_FORMAT_MESSAGE = "Did not <placeHolder> due to incorrect format.";
     private static final String PLACEHOLDER = "<placeHolder>";
+    private static final String OUT_OF_BOUNDS_RES_MESSAGE =
+            "Did not change resolution due to exceeding boundaries.";
     private final HashSet<String>  legalCommands = new HashSet<>(Arrays.asList(
             "chars", "add", "remove", "res", "output", "reverse", "asciiArt", "exit"
     ));
@@ -97,7 +100,7 @@ public class Shell {
                         return "asciiArt";
                 }
             }
-            catch (IncorrectFormatException e) {
+            catch (InputException e) {
                 System.out.println(e.getMessage());
                 return "";
             }
@@ -143,7 +146,7 @@ public class Shell {
 
     }
 
-    private void handleResInput(String[] commandInput) throws IncorrectFormatException {
+    private void handleResInput(String[] commandInput) throws InputException {
         if (commandInput.length < 2) {
             System.out.println("Resolution set to " + resolutionChosen);
             return;
@@ -153,7 +156,7 @@ public class Shell {
             if (resolutionChosen * 2 <= imgWidth) {
                 resolutionChosen *= 2;
             } else {
-                System.out.println("Did not change resolution due to exceeding boundaries.");
+                throw new BoundariesException(OUT_OF_BOUNDS_RES_MESSAGE);
             }
         } else if (update.equals("down")) {
 
@@ -161,7 +164,7 @@ public class Shell {
             if (resolutionChosen / 2 >= minCharsInRow) {
                 resolutionChosen /= 2;
             } else {
-                System.out.println("Did not change resolution due to exceeding boundaries.");
+                throw new BoundariesException(OUT_OF_BOUNDS_RES_MESSAGE);
             }
         } else {
             throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.
