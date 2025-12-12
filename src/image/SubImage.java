@@ -9,6 +9,10 @@ import java.awt.*;
  */
 public class SubImage {
 
+    private static final double RED_PIXEL_FACTOR = 0.2126;
+    private static final double GREEN_PIXEL_FACTOR = 0.7152;
+    private static final double BLUE_PIXEL_FACTOR = 0.0722;
+    private static final double INITIAL_VALUE = 0.0;
     private final double brightness;
     private final Color[][] pixels;
     private static final int MAX_BRIGHTNESS = 255;
@@ -27,11 +31,11 @@ public class SubImage {
     }
 
     private double calculateBrightness() {
-        double total = 0.0;
+        double total = INITIAL_VALUE;
         for (Color[] row : this.pixels) {
             for (Color pixel : row) {
-                double greyPixel = pixel.getRed() * 0.2126 + pixel.getGreen() * 0.7152
-                        + pixel.getBlue() * 0.0722;
+                double greyPixel = pixel.getRed() * RED_PIXEL_FACTOR + pixel.getGreen() * GREEN_PIXEL_FACTOR
+                        + pixel.getBlue() * BLUE_PIXEL_FACTOR;
                 total += greyPixel;
             }
         }

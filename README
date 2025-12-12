@@ -1,3 +1,93 @@
+eilam.soroka,yellowcow598
+209091230, 318854429
+1.Project class explanation:
+
+Package: image
+In our implementation of the image package, we added the several classes in order to handle image processing
+while keeping the code modular and implementing the single responsibility principle
+
+class ImagePadder - handles padding images to ensure their dimensions are a power of two.
+Relationships:
+Receives an Image
+Creates a new padded Image (shown with «create»)
+That padded image is passed to ImageDivider
+
+class ImageDivider - is responsible for dividing an image into smaller sub-images based on
+specified dimensions.
+Relationships:
+Receives the padded Image
+Creates many SubImage objects
+
+class SubImage - represents a sub-image that has been created through the ImageDivider. It
+contains information about the sub-image's brightness to facilitate character matching without redundant
+calculations.
+Relationships:
+Created by ImageDivider
+Later consumed by AsciiArtAlgorithm and mapped to characters via SubImgCharMatcher
+
+class Image - given. Represents a 2D array of Color pixels.
+Relationships:
+Used by ImagePadder to produce a padded version
+Used by ImageDivider as input for slicing
+
+Package: image_char_matching
+class CharConverter - converts a Java character into a boolean 16×16 bitmap representing how the character
+looks visually.
+Relationships:
+Used internally by SubImgCharMatcher to measure the brightness of ASCII characters.
+
+class SubImgCharMatcher - maps each ASCII character in the charset to its brightness, normalizes these
+values and caches them.Executes actions on char set such as adding and removing characters. Given a sub-image
+brightness, returns the character whose brightness is closest.
+Relationships:
+Used by AsciiArtAlgorithm to map each SubImage to a character
+Depends on CharConverter for brightness calculation
+Receives brightness values from SubImages during matching
+
+Package: ascii_art
+class AsciiArtAlgorithm - runs the entire ASCII-art conversion pipeline.
+Relationships:
+Uses the matcher to map SubImages to characters
+Uses many subImages to cover the entire input image
+Created and invoked by Shell
+
+class Shell - the main user interface of the program. Parses user commands, updates settings, and triggers
+the ASCII-art generation algorithm. Acts as the top-level controller of the entire system
+Relationships:
+Creates the AsciiArtAlgorithm
+Creates the matcher and subimages indirectly through the pipeline
+
+class KeyboardInput - handles reading user input from the console.
+Relationships:
+Used by Shell to get user commands and parameters
+
+2. Data Structures Explanation:
+TreeSet: We used a TreeSet to store the characters in the charset because it automatically sorts the
+characters and provides efficient O(log n) time complexity for insertion, deletion, and lookup operations.
+HashMap: We used HashMaps in the SubImgCharMatcher class to map characters to their brightness values (both
+normalized and not normalized). HashMaps provide O(1) average time complexity for lookups, which is crucial
+for quickly retrieving brightness values during the matching process. This allows us to efficiently find the
+character with brightness closest to a given subImage brightness.
+ArrayList: We used ArrayLists to store the list of SubImages. ArrayList<SubImage> is used because sub-images
+are created once and then accessed sequentially by index. ArrayList provides O(1) access, efficient iteration,
+and minimal memory overhead, which is optimal for the ASCII-art conversion algorithm.
+
+3. Exception Handling Explanation:
+In our implementation, we handled exceptions by creating custom exception classes to provide clear and
+specific error messages for different failure scenarios. We created a general InputException class to handle
+input related errors, and more specific BoundariesException, IncorrectCharSetException and
+IncorrectFormatException that extend InputException. This hierarchy allows us to catch and handle exceptions
+at different levels of granularity and print informative messages to the user. We ensured that our methods
+validate inputs and throw appropriate exceptions when invalid data is encountered. We also used the java
+IOException class to handle file-related exceptions.
+
+4.SubImgCharMatcher API Changes:
+We added a getter method for the charSet field to allow external access to the current set of characters
+stored in the SubImgCharMatcher. This method returns a TreeSet<Character> containing all characters in the
+charset and is useful for the Shell class to display or manipulate the current character set.
+
+5. We did not commit any changes to the classes that were given to us.
+
 SubImgCharMatcher Class Implementation:
 In our implementation of the SubImgCharMatcher class, we used different data structures to optimize the
 performance of character matching in sub-images.
@@ -14,14 +104,6 @@ recompute the normalized values without recalculating the raw brightness for eac
 brightness values for each character. This allows for quick access to the already calculated normalized
 brightness values when the char set isn't changed between different runs of the matcher.
 
-image Package Implementation:
-In our implementation of the image package, we added the several classes in order to handle image processing
-while keeping the code modular and implementing the single responsibility principle.:
-1. ImagePadder: This class handles padding images to ensure their dimensions are a power of two.
-2. ImageDivider: This class is responsible for dividing an image into smaller sub-images based on specified
-dimensions.
-3. SubImage: This class represents a sub-image that has been created through the ImageDivider. It contains
-information about the sub-image's brightness to facilitate character matching without redundant calculations.
 
 AsciiArtAlgorithm Class Implementation:
 In our implementation of the AsciiArtAlgorithm class, we created a constructor that gets a SunImgCharMatcher,

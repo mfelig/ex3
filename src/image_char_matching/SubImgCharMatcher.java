@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 import java.lang.Math;
 
+
 /**
  * A public class of the package image_char_matching.
  * Matches sub-image brightness to characters from a given character set.
@@ -10,6 +11,7 @@ import java.lang.Math;
  */
 public class SubImgCharMatcher {
     private static final int CHAR_PIXEL_RESOLUTION = 16;
+    private static final char SPACE_CHAR = ' ';
 
     private double minBrightness = Double.MAX_VALUE;
     private  double maxBrightness = Double.MIN_VALUE;
@@ -68,7 +70,7 @@ public class SubImgCharMatcher {
      */
     public char getCharByImageBrightness(double brightness) {
         double matchedDiff = Double.MAX_VALUE;
-        char matchedChar = ' ';
+        char matchedChar = SPACE_CHAR;
         for(Character c : charSet) {
             double diff = Math.abs(brightness - charNormalizedBrightnessMap.get(c));
             if (diff < matchedDiff) {

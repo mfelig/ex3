@@ -8,6 +8,9 @@ import java.awt.Color;
  */
 public class ImagePadder {
 
+    private static final int WHITE_VALUE = 255;
+    private static final int DIVIDE_FACTOR = 2;
+    private static final int FACTOR = 2;
     private final Image paddedImage;
 
     /**
@@ -40,7 +43,7 @@ public class ImagePadder {
 
         Color[][] paddedPixels = new Color[newHeight][newWidth];
 
-        Color white = new Color(255, 255, 255);
+        Color white = new Color(WHITE_VALUE, WHITE_VALUE, WHITE_VALUE);
 
         // Fill entire padded image with white
         for (int row = 0; row < newHeight; row++) {
@@ -49,8 +52,8 @@ public class ImagePadder {
             }
         }
 
-        int offsetX = (newWidth - origWidth) / 2;
-        int offsetY = (newHeight - origHeight) / 2;
+        int offsetX = (newWidth - origWidth) / DIVIDE_FACTOR;
+        int offsetY = (newHeight - origHeight) / DIVIDE_FACTOR;
 
         // Copy original image pixels into the center of the padded image
         for (int i = 0; i < origHeight; i++) {
@@ -69,7 +72,7 @@ public class ImagePadder {
     private int nextPowerOfTwo(int n) {
         int p = 1;
         while (p < n){
-            p *= 2;
+            p *= FACTOR;
         }
         return p;
     }

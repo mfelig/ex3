@@ -31,6 +31,7 @@ public class Shell {
     private static final int DEFAULT_RESOLUTION = 128;
     private static final char FIRST_POSSIBLE_CHAR = 32;
     private static final char LAST_POSSIBLE_CHAR = 126;
+    private static final String DEFAULT_CHARSET = "0123456789";
     private static final String INCORRECT_COMMAND_MESSAGE = "Did not execute due to incorrect command.";
     private static final String INCORRECT_FORMAT_MESSAGE = "Did not <placeHolder> due to incorrect format.";
     private static final String PLACEHOLDER = "<placeHolder>";
@@ -39,6 +40,7 @@ public class Shell {
     private static final String INSUFFICIENT_CHARS_MESSAGE = "Did not execute. Charset is too small.";
     private static final String PRINTING_FORMAT = ">>> ";
     private static final String SPACE = " ";
+    private static final String EMPTY_STRING = "";
     private static final String CONSOLE_OUTPUT_FORMAT = "console";
     private static final String HTML_OUTPUT_FORMAT = "html";
     private static final String EXIT_COMMAND = "exit";
@@ -57,8 +59,16 @@ public class Shell {
     private static final String CHANGE_RESOLUTION = "change resolution";
     private static final String CHANGE_OUTPUT = "change output method";
     private static final String ENTIRE_PRINTABLE_CHAR_SET = "all";
-    private static final String REGEX = ".-.";
+    private static final String RANGE_REGEX = ".-.";
     private static final char SPACE_CHAR = ' ';
+    private static final int MINIMUM_CHARSET_SIZE_FOR_ASCII_ART = 2;
+    private static final int RESOLUTION_COMMAND_LENGTH = 2;
+    private static final int RESOLUTION_FACTOR = 2;
+    private static final int OUTPUT_COMMAND_LENGTH = 2;
+    private static final int ADD_OR_REMOVE_MINIMUM_COMMAND_LENGTH = 2;
+    private static final int ADD_OR_REMOVE_RANGE_LENGTH = 3;
+    private static final int RANGE_START = 0;
+    private static final int RANGE_END = 2;
     private final SubImgCharMatcher matcher;
     private int resolutionChosen;
     private String outputFormat;
@@ -69,20 +79,18 @@ public class Shell {
 
     /**
      * Constructs a Shell with default settings.
-     * @return none
      */
     public Shell() {
-        matcher = new SubImgCharMatcher("0123456789".toCharArray());
-        outputFormat = "console";
+        matcher = new SubImgCharMatcher(DEFAULT_CHARSET.toCharArray());
+        outputFormat = CONSOLE_OUTPUT_FORMAT;
         resolutionChosen = DEFAULT_RESOLUTION;
     }
     /**
      * Runs the shell, processing user commands for ASCII art generation.
      * @param filePath the path to the image file to be processed
-     *                @return none
      */
     public void run(String filePath){
-        String line = "";
+        String line = EMPTY_STRING;
 
         try {
             img = new Image(filePath);
@@ -93,21 +101,21 @@ public class Shell {
         imgWidth = img.getWidth();
         imgHeight = img.getHeight();
 
-        while(!line.equals("exit")) {
+        while(!line.equals(EXIT_COMMAND)) {
 
-            System.out.print(">>> ");
+            System.out.print(PRINTING_FORMAT);
             line = KeyboardInput.readLine();
             try{
                 line = handleCommandExecution(line);
                 }
-            catch (IncorrectFormatException e){ //todo check if this error should be caught
+            catch (IncorrectFormatException e){
                 System.out.println(e.getMessage());
             }
         }
     }
 
     private String handleCommandExecution(String line) throws IncorrectFormatException {
-        String[] commandInput = line.split(" ");
+        String[] commandInput = line.split(SPACE);
 
         try {
             switch (commandInput[0]) {
@@ -145,11 +153,11 @@ public class Shell {
     }
 
     private void handleReverseInput() {
-        reverse = !reverse; // todo understand if it has to change just for true or back and forth
+        reverse = !reverse;
     }
 
     private void handleAsciiArtInput() throws IncorrectCharSetException{
-        if (matcher.getCharSet().size() < 2) {
+        if (matcher.getCharSet().size() < MINIMUM_CHARSET_SIZE_FOR_ASCII_ART) {
             throw new IncorrectCharSetException(INSUFFICIENT_CHARS_MESSAGE);
         }
 
@@ -164,11 +172,11 @@ public class Shell {
         char[][] asciiMatrix = algo.run();
 
         AsciiOutput output;
-        if (outputFormat.equals("console")) {
+        if (outputFormat.equals(CONSOLE_OUTPUT_FORMAT)) {
             output = new ConsoleAsciiOutput();
         }
         else {
-            output = new HtmlAsciiOutput("out.html", "Courier New");
+            output = new HtmlAsciiOutput(OUTPUT_FILE_NAME, FONT_NAME);
         }
 
 
@@ -177,36 +185,37 @@ public class Shell {
     }
 
     private void handleResInput(String[] commandInput) throws InputException {
-        if (commandInput.length < 2) {
-            System.out.println("Resolution set to " + resolutionChosen);
+        if (commandInput.length < RESOLUTION_COMMAND_LENGTH) {
+            System.out.println(RESOLUTION_CHOSEN_MESSAGE + resolutionChosen);
             return;
         }
         String update = commandInput[1];
-        if (update.equals("up")) {
-            if (resolutionChosen * 2 <= imgWidth) {
-                resolutionChosen *= 2;
+        if (update.equals(RESOLUTION_UP_COMMAND)) {
+            if (resolutionChosen * RESOLUTION_FACTOR <= imgWidth) {
+                resolutionChosen *= RESOLUTION_FACTOR;
             } else {
                 throw new BoundariesException(OUT_OF_BOUNDS_RES_MESSAGE);
             }
-        } else if (update.equals("down")) {
+        } else if (update.equals(RESOLUTION_DOWN_COMMAND)) {
 
             int minCharsInRow = max(1, imgWidth / imgHeight);
-            if (resolutionChosen / 2 >= minCharsInRow) {
-                resolutionChosen /= 2;
+            if (resolutionChosen / RESOLUTION_FACTOR >= minCharsInRow) {
+                resolutionChosen /= RESOLUTION_FACTOR;
             } else {
                 throw new BoundariesException(OUT_OF_BOUNDS_RES_MESSAGE);
             }
         } else {
             throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.
-                    replace(PLACEHOLDER, "change resolution"));
+                    replace(PLACEHOLDER, CHANGE_RESOLUTION));
         }
     }
 
     private void handleOutputInput(String[] commandInput) throws IncorrectFormatException {
-        if (commandInput.length < 2 ||
-                (!commandInput[1].equals("console") && !commandInput[1].equals("html"))) {
+        if (commandInput.length < OUTPUT_COMMAND_LENGTH ||
+                (!commandInput[1].equals(CONSOLE_OUTPUT_FORMAT) &&
+                        !commandInput[1].equals(HTML_OUTPUT_FORMAT))) {
             throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.
-                    replace(PLACEHOLDER, "change output method"));
+                    replace(PLACEHOLDER, CHANGE_OUTPUT));
         }
         outputFormat = commandInput[1];
         }
@@ -214,18 +223,18 @@ public class Shell {
     private void handleCharsInput() {
         TreeSet<Character> chars = matcher.getCharSet();
         for (char c : chars) {
-            System.out.print(c + " ");
+            System.out.print(c + SPACE);
         }
         System.out.println();
     }
 
     private void handleAddOrRemoveInput(String[] commandsInput) throws IncorrectFormatException{
-        boolean isAdd = commandsInput[0].equals("add");
+        boolean isAdd = commandsInput[0].equals(ADD_COMMAND);
 
-        if (commandsInput.length >= 2) {
+        if (commandsInput.length >= ADD_OR_REMOVE_MINIMUM_COMMAND_LENGTH) {
             String arg = commandsInput[1];
 
-            if (arg.equals("all")) {
+            if (arg.equals(ENTIRE_PRINTABLE_CHAR_SET)) {
                 for (char c = FIRST_POSSIBLE_CHAR; c <= LAST_POSSIBLE_CHAR; c++) {
                     if (isAdd) {
                         matcher.addChar(c);
@@ -236,11 +245,11 @@ public class Shell {
                 return;
             }
 
-            if (arg.equals("space")) {
+            if (arg.equals(SPACE)) {
                 if (isAdd) {
-                    matcher.addChar(' ');
+                    matcher.addChar(SPACE_CHAR);
                 } else {
-                    matcher.removeChar(' ');
+                    matcher.removeChar(SPACE_CHAR);
                 }
                 return;
             }
@@ -254,9 +263,9 @@ public class Shell {
                 return;
             }
 
-            if (arg.matches(".-.") && arg.length() == 3) {
-                char start = arg.charAt(0);
-                char end = arg.charAt(2);
+            if (arg.matches(RANGE_REGEX) && arg.length() == ADD_OR_REMOVE_RANGE_LENGTH) {
+                char start = arg.charAt(RANGE_START);
+                char end = arg.charAt(RANGE_END);
                 if (start > end) {
                     char temp = start;
                     start = end;
@@ -273,10 +282,10 @@ public class Shell {
             }
         }
         if(isAdd){
-            throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.replace(PLACEHOLDER, "add"));
+            throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.replace(PLACEHOLDER, ADD_COMMAND));
         }
         else{
-            throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.replace(PLACEHOLDER, "remove"));
+            throw new IncorrectFormatException(INCORRECT_FORMAT_MESSAGE.replace(PLACEHOLDER, REMOVE_COMMAND));
         }
     }
     /**
